@@ -1,0 +1,37 @@
+DAY 1
+
+1.1 Network stuff (router, create apple hotspot, etc)
+1.2 Synthesis
+1.3 Sequencing
+
+break
+
+2.1 Networking Activities
+
+Parallel (Anna's Freesound live coding stuff')
+Pairs or small groups exchange
+Everyone controls central server
+Figure out what we want for performance
+
+break
+
+3.1 Performance
+
+
+
+DAY 2
+
+1.1 Recap previous day
+1.2 Revisit DAY 1 session 1
+1.3 Machine listening
+
+break
+
+2.1 Using machine listening in activity
+2.2 Tools: Utopia
+2.3 Mandelbrots
+2.4 Figure out performance
+
+break
+
+3.1 Performance
