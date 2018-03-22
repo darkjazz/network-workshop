@@ -1,8 +1,10 @@
+// BASICS
+
 "
 Download: https://supercollider.github.io
 The files are available at: http://192.168.1.100/rewire/network.zip
 
-email: alo@tehis.net
+email: alo@tehis.net / axambo@qmul.ac.uk
 
 
 
@@ -29,7 +31,7 @@ to execute code, highlight it and press cmd-ENTER (varies by platform)
 
 "
 
-
+// Network concepts
 
 ~neopkwaii = Server("neopkwaii", NetAddr("192.168.1.101", 57110))
 
@@ -60,3 +62,7 @@ s.sendMsg("/n_query", ~s1)
 
 
 s.queryAllNodes
+
+// Synthesis concepts
+
+// Sequencing concepts

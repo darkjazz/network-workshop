@@ -1,8 +1,10 @@
+// RECAP PREVIOUS DAY
+
 "
 Download: https://supercollider.github.io
 The files are available at: http://192.168.1.100/rewire/network.zip
 
-email: alo@tehis.net
+email: alo@tehis.net / a.xambo@qmul.ac.uk
 
 
 
