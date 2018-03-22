@@ -1,4 +1,4 @@
-// Collaborative Network Music (workshop) led by Alo Allik and Anna Xambó.
+// Collaborative Network Music (workshop) led by Alo Allik (alo@tehis.net) and Anna Xambó (axambo@qmul.ac.uk).
 // April 7-8, 2018.
 // Organized by Music Hackspace.
 // Sponsored by Rewire 2018. The Hague, The Netherlands.
@@ -8,10 +8,6 @@
 "
 Download: https://supercollider.github.io
 The files are available at: http://192.168.1.100/rewire/network.zip
-
-email: alo@tehis.net / axambo@qmul.ac.uk
-
-
 
 
 SuperCollider basics:
