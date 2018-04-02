@@ -1,5 +1,6 @@
-"
-Collaborative Network Music (workshop) led by Alo Allik (alo@tehis.net) and Anna Xambó (axambo@qmul.ac.uk).
+/*
+Collaborative Network Music (workshop) led by Alo Allik (alo@tehis.net)
+and Anna Xambó (axambo@qmul.ac.uk).
 April 7-8, 2018.
 Organized by Music Hackspace.
 Sponsored by Rewire 2018. The Hague, The Netherlands.
@@ -8,6 +9,8 @@ Sponsored by Rewire 2018. The Hague, The Netherlands.
 
 INTRODUCTION
 ----------------------------------------------------------
+
+
 
 
 Download: https://supercollider.github.io
@@ -22,7 +25,7 @@ SuperCollider basics:
 	language - programming language to control synthesis
 
 - when you open the SuperCollider IDE there are 2 windows:
-	post - where the application posts feedback e.g. errors, status updates, etc.
+	post - where the application posts feedback e.g. errors, info, status etc.
 	editor window
 
 to make a new window use cmd-N or choose File->New from the menu
@@ -31,12 +34,19 @@ to make a new window use cmd-N or choose File->New from the menu
 
 to execute code, highlight it and press cmd-ENTER (varies by platform)
 
+to stop all local server processes cmd-.
+
+
+
+
+
+
+
+
+FIRST NETWORK MUSIC EXAMPLES
+----------------------------------------------------------
 */
 
-
-FIRST NETWORK MUSIC EXAMPLE
-----------------------------------------------------------
-"
 
 ~server = Server(
 	"remote",
@@ -47,18 +57,42 @@ FIRST NETWORK MUSIC EXAMPLE
 )
 
 
-SynthDef('crackle', {
-	Out.ar(0, Crackle.ar(1.9))
+SynthDef('crackle', {arg param;
+	Out.ar(0, Crackle.ar(param))
 }).send(~server);
 
 
+~crackle = Synth('crackle', ['param', 1.0], ~server)
+
+~crackle.set('param', 1.97)
+
+~crackle.free
 
 
-"
+SynthDef('tone', {arg freq, amp, dur;
+	var sig;
+	sig = LFSaw.ar(freq, mul: amp) * Line.kr(1, 0, dur, doneAction: 2);
+	Out.ar(0, sig)
+}).send(~server)
 
-DAY 1 SESSION 1: BASICS
+Pbind(
+	'instrument', 'tone',
+	'server', Prand([~server, s], 7),
+	'freq', Pseq(Scale.minor.ratios * 101),
+	'amp', 0.3,
+	'dur', 0.4
+).play
+
+
+
+
+
+/*
+DAY 1 SESSION 1: SUPERCOLLIDER BASICS
 ----------------------------------------------------------
-"
+*/
+
+
 
 
 // Network concepts
