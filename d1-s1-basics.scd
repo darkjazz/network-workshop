@@ -125,8 +125,6 @@ OSCdef('code', {arg message;
 
 
 
-
-
 ~mycode = SynthDef('tone', {arg freq, amp, dur;
 	var sig;
 	sig = LFSaw.ar(freq, mul: amp) * Line.kr(1, 0, dur, doneAction: 2);
@@ -134,6 +132,28 @@ OSCdef('code', {arg message;
 }).asCompileString
 
 ~client.sendMsg("/chat", "alo", ~mycode)
+
+
+/*
+OR EXECUTED
+*/
+
+~mycode = "Tdef('loop', {
+	100.do({
+		SynthDef('racket', {
+			Out.ar(0, PMOsc.ar(rrand(30, 60), rrand(100, 200), 10.rand)
+				* Line.kr(0.3.rand, 0, rrand(0.3, 1.0), doneAction: 2))
+		}).play;
+		rrand(0.2, 0.6).wait;
+	})
+}).play";
+
+~client.sendMsg("/run", ~mycode)
+
+OSCdef('run', { arg message;
+	message[1].asString.compile.()
+}, '/run')
+
 
 
 
