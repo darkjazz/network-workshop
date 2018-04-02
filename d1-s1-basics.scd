@@ -1,11 +1,15 @@
-// Collaborative Network Music (workshop) led by Alo Allik (alo@tehis.net) and Anna Xambó (axambo@qmul.ac.uk).
-// April 7-8, 2018.
-// Organized by Music Hackspace.
-// Sponsored by Rewire 2018. The Hague, The Netherlands.
-
-// BASICS
-
 "
+Collaborative Network Music (workshop) led by Alo Allik (alo@tehis.net) and Anna Xambó (axambo@qmul.ac.uk).
+April 7-8, 2018.
+Organized by Music Hackspace.
+Sponsored by Rewire 2018. The Hague, The Netherlands.
+
+
+
+INTRODUCTION
+----------------------------------------------------------
+
+
 Download: https://supercollider.github.io
 The files are available at: http://192.168.1.100/rewire/network.zip
 
@@ -30,7 +34,32 @@ to execute code, highlight it and press cmd-ENTER (varies by platform)
 */
 
 
+FIRST NETWORK MUSIC EXAMPLE
+----------------------------------------------------------
 "
+
+~server = Server(
+	"remote",
+	NetAddr(
+		"192.168.1.102",
+		57110
+	)
+)
+
+
+SynthDef('crackle', {
+	Out.ar(0, Crackle.ar(1.9))
+}).send(~server);
+
+
+
+
+"
+
+DAY 1 SESSION 1: BASICS
+----------------------------------------------------------
+"
+
 
 // Network concepts
 
