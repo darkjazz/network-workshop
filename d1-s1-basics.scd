@@ -20,7 +20,7 @@ The files are available at: http://192.168.1.100/rewire/network.zip
 SuperCollider basics:
 
 - there are 3 components to SuperCollider:
-	synthesis engine - a separate application that makes the sound
+	synthesis server - a separate application that makes the sound
 	unit generator plugins - sound synthesis units (e.g. SinOsc)
 	language - programming language to control synthesis
 
@@ -95,7 +95,49 @@ DAY 1 SESSION 1: SUPERCOLLIDER BASICS
 
 
 
-// Network concepts
+/* NETWORK
+YOU CAN ALSO SEND MESSAGES TO ANOTHER CLIENT
+IF THE CLIENT KNOWS HOW TO RECEIVE IT
+YOU CAN CHAT MESSAGES
+*/
+
+~client = NetAddr("192.168.1.102", 57120)
+
+~client.sendMsg("/chat", "alo", "hello let's make some noise :)")
+
+OSCdef('chat', {arg message;
+	Post << "#" << message[1] << ": " << message[2] << Char.nl
+}, "/chat")
+
+
+
+/*
+OR IF YOU HAVE A WINDOW FOR YOUR COLLABORATORS CODE
+IT CAN BE AUTOMATICALLY POSTED IN THERE
+*/
+
+~codedoc = Document.allDocuments.select({arg doc; doc.name == "send-me-code.scd"}).first
+
+OSCdef('code', {arg message;
+	~codedoc.string = "//from " ++ message[1] ++ Char.nl.asString ++ message[2];
+	~codedoc.front;
+}, "/code")
+
+
+
+
+
+~mycode = SynthDef('tone', {arg freq, amp, dur;
+	var sig;
+	sig = LFSaw.ar(freq, mul: amp) * Line.kr(1, 0, dur, doneAction: 2);
+	Out.ar(0, sig)
+}).asCompileString
+
+~client.sendMsg("/chat", "alo", ~mycode)
+
+
+
+
 
 ~neopkwaii = Server("neopkwaii", NetAddr("192.168.1.101", 57110))
 
@@ -127,6 +169,8 @@ s.sendMsg("/n_query", ~s1)
 
 s.queryAllNodes
 
-// Synthesis concepts
+// SYNTHESIS
 
-// Sequencing concepts
+
+
+// SEQUENCING
