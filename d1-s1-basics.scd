@@ -119,7 +119,7 @@ IT CAN BE AUTOMATICALLY POSTED IN THERE
 ~codedoc = Document.allDocuments.select({arg doc; doc.name == "send-me-code.scd"}).first
 
 OSCdef('code', {arg message;
-	~codedoc.string = "//from " ++ message[1] ++ Char.nl.asString ++ message[2];
+	~codedoc.string = " /*from " ++ message[1] ++ "*/ " ++ Char.nl.asString ++ message[2] ++ Char.nl.asString;
 	~codedoc.front;
 }, "/code")
 
