@@ -47,41 +47,54 @@ FIRST NETWORK MUSIC EXAMPLES
 ----------------------------------------------------------
 */
 
-
+(
 ~server = Server(
 	"remote",
 	NetAddr(
-		"192.168.1.102",
+		// "192.168.1.102",
+		"192.168.2.3",
 		57110
 	)
+)
 )
 
 
 SynthDef('crackle', {arg param;
 	Out.ar(0, Crackle.ar(param))
-}).send(~server);
+}).add.send(~server);
+
+~localcrackle = Synth('crackle', ['param', 1.5])
+
+~remotecrackle = Synth('crackle', ['param', 1.0], ~server)
 
 
-~crackle = Synth('crackle', ['param', 1.0], ~server)
+~remotecrackle.set('param', 1.999)
 
-~crackle.set('param', 1.97)
 
-~crackle.free
+~localcrackle.set('param', 0.8)
+
+~localcrackle.free
 
 
 SynthDef('tone', {arg freq, amp, dur;
-	var sig;
-	sig = LFSaw.ar(freq, mul: amp) * Line.kr(1, 0, dur, doneAction: 2);
+	var sig, env;
+	env = Line.kr(1, 0, dur);
+	FreeSelfWhenDone.kr(env);
+	sig = LFSaw.ar(freq) * env;
 	Out.ar(0, sig)
 }).send(~server)
 
-Pbind(
-	'instrument', 'tone',
-	'server', Prand([~server, s], 7),
-	'freq', Pseq(Scale.minor.ratios * 101),
-	'amp', 0.3,
-	'dur', 0.4
-).play
+Synth('tone', ['freq', 101, 'amp', 0.2, 'dur', 1.0], ~server)
+
+Tdef('tones', {
+	loop({
+		Synth('tone', ['freq', 201.rand, 'amp', 0.5, 'dur', rrand(0.4, 1.0)], ~server);
+		[0.25, 0.5, 0.375].choose.wait
+	})
+}).play
+
+Tdef('tones').clear
+
 
 
 
@@ -96,10 +109,16 @@ DAY 1 SESSION 1: SUPERCOLLIDER BASICS
 
 
 /* NETWORK
+
 YOU CAN ALSO SEND MESSAGES TO ANOTHER CLIENT
+
 IF THE CLIENT KNOWS HOW TO RECEIVE IT
-YOU CAN CHAT MESSAGES
+
+YOU CAN SEND CHAT MESSAGES
 */
+
+"ipconfig getifaddr en0".unixCmd
+
 
 ~client = NetAddr("192.168.1.102", 57120)
 
@@ -113,6 +132,7 @@ OSCdef('chat', {arg message;
 
 /*
 OR IF YOU HAVE A WINDOW FOR YOUR COLLABORATORS CODE
+
 IT CAN BE AUTOMATICALLY POSTED IN THERE
 */
 
@@ -135,7 +155,7 @@ OSCdef('code', {arg message;
 
 
 /*
-OR EXECUTED
+OR THE CODE CAN AUTOMATICALLY RUN ON THE OTHER COMPUTER
 */
 
 ~mycode = "Tdef('loop', {
@@ -191,6 +211,65 @@ s.queryAllNodes
 
 // SYNTHESIS
 
+~server = Server("rewire", NetAddr("192.168.2.3", 57110))
+
+SynthDef('sine', {arg freq, amp, dur;
+	var sig;
+	sig = SinOsc.ar(freq) * EnvGen.kr(Env.perc, 1, amp, timeScale: dur, doneAction: 2);
+	Out.ar(0, sig)
+}).add.send(~server)
+
+
 
 
 // SEQUENCING
+
+~bind = Pbind().play
+~bind.stop
+
+SynthDef('sine', {arg freq, amp, dur;
+	var sig;
+	sig = SinOsc.ar(freq) * EnvGen.kr(Env.perc, 1, amp, timeScale: dur, doneAction: 2);
+	Out.ar(0, sig)
+}).add.send(~server)
+
+~seq = Pbind(
+	'server', Prand([s, ~server], inf),
+	'instrument', 'sine',
+	'freq', Pseq(Scale.minor.ratios * 201, inf),
+	'amp', Pwhite(0.4, 0.8),
+	'dur', Prand([1, 2, 3, 4], inf),
+	'delta', 0.5
+).play
+
+~seq.stop
+
+
+SynthDef('slide', {arg freq, amp, dur;
+	var sig;
+	sig = SinOsc.ar(XLine.kr(freq, freq*2, dur)) * EnvGen.kr(Env.perc, 1, amp, timeScale: dur, doneAction: 2);
+	Out.ar(0, sig)
+}).add.send(~server)
+
+
+~seq = Pseq([
+	Pbind(
+		'server', Prand([s, ~server], inf),
+		'instrument', 'sine',
+		'freq', Pseq(Scale.minor.ratios * 201, 2),
+		'amp', Pwhite(0.4, 0.8),
+		'dur', Prand([1, 2, 3, 4], inf),
+		'delta', 0.5
+	),
+	Pbind(
+		'server', Pstutter(2, Pseq([s, ~server], 2)),
+		'instrument', Pseq(['sine', 'slide'], 8),
+		'freq', Pseq(Scale.minor.ratios.reverse * 401, 2),
+		'amp', 0.5,
+		'dur', 0.7,
+		'delta', 0.25
+	)
+], inf).play
+
+
+
