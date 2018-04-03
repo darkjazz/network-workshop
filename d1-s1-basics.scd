@@ -46,6 +46,8 @@ FIRST NETWORK MUSIC EXAMPLES
 ----------------------------------------------------------
 */
 
+
+
 (
 ~server = Server(
 	"remote",
@@ -212,17 +214,70 @@ s.queryAllNodes
 
 ~server = Server("rewire", NetAddr("192.168.2.3", 57110))
 
+// simple synth with a sinewave
 SynthDef('sine', {arg freq, amp, dur;
 	var sig;
 	sig = SinOsc.ar(freq) * EnvGen.kr(Env.perc, 1, amp, timeScale: dur, doneAction: 2);
 	Out.ar(0, sig)
 }).add.send(~server)
 
+// play it
+Synth('sine', ['freq', 241, 'amp', 0.4, 'dur', 1.0 ])
+
+// or you can have a 100 :)
+100.do({
+	Synth('sine', ['freq', 2000.rand, 'amp', 1/100, 'dur', 1.0 ])
+})
+
+// you can modulate any parameter with another ugen
+SynthDef('modulate', {arg freq, amp, dur;
+	var sig;
+	sig = SinOsc.ar(freq, SinOsc.kr(freq), SinOsc.kr(freq*0.1)) * EnvGen.kr(Env.perc, 1, amp, timeScale: dur, doneAction: 2);
+	Out.ar(0, sig)
+}).add.send(~server)
+
+Synth('modulate', ['freq', 241, 'amp', 0.4, 'dur', 1.0 ])
+
+
+// you can use filters
+SynthDef('filter', {arg freq, amp, dur;
+	var sig;
+	sig = BPF.ar(WhiteNoise.ar, freq, 1.0/SinOsc.kr(2).range(freq/4, freq*4), 10) * EnvGen.kr(Env.perc, 1, amp, timeScale: dur, doneAction: 2);
+	Out.ar(0, sig)
+}).add.send(~server)
+
+Synth('filter', ['freq', 241, 'amp', 2.0, 'dur', 2.0 ])
 
 
 
-// SEQUENCING
 
+
+// SEQUENCING WITH SCHEDULERS AND LOOPS
+
+~freqs = Scale.minor.ratios * 301;
+Tdef('myloop', {
+	loop({
+		Synth('sine', ['freq', ~freqs.choose, 'amp', 0.2.rand, 'dur', 1 ]);
+		1.wait; // <---- VERY IMPORTANT!!!!
+	})
+}).play
+
+// you can change it while it runs
+
+Tdef('myloop', {
+	loop({
+		Synth('sine', ['freq', ~freqs.choose, 'amp', 0.2, 'dur', 0.4 ]);
+		0.1.wait;
+	})
+})
+
+// now clear it up so it doesn't run indefinitely
+Tdef('myloop').clear
+
+
+// SEQUENCING WITH PATTERNS
+
+// there is this magical object called Pbind...
 ~bind = Pbind().play
 ~bind.stop
 
