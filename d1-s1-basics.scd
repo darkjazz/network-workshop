@@ -42,7 +42,6 @@ to stop all local server processes cmd-.
 
 
 
-
 FIRST NETWORK MUSIC EXAMPLES
 ----------------------------------------------------------
 */
@@ -270,6 +269,5 @@ SynthDef('slide', {arg freq, amp, dur;
 		'delta', 0.25
 	)
 ], inf).play
-
 
 
