@@ -8,6 +8,78 @@
 // we can use machine listening ugens to capture information
 // from audio, like pitch, and use it for synthesis
 
+
+// SoundIn
+
+// directly reading from the input of computer/soundcard...
+
+// avoid feedback using headphones
+{ SoundIn.ar(0) }.play; // mono
+{ SoundIn.ar([0,1]) }.play; // stereo
+{ SoundIn.ar(0)!2 }.play; // stereo
+
+{SoundIn.ar(0).poll(label:\audioIn)}.play;
+
+(
+x = {
+var in;
+in = SoundIn.ar(0).poll(label:\audioIn);
+Amplitude.kr(in).poll(label:\amp); // input amplitude
+}.play;
+)
+
+// plot the amplitude
+{ Amplitude.kr(SoundIn.ar(0)); }.scope;
+
+//	plugging the SoundIn as the amplitude of a UG e.g. pulse width modulation  - use headphones to prevent feedback.
+{ Pulse.ar(440, 0.1, Amplitude.kr(SoundIn.ar(0)))!2 }.scope
+{ Pulse.ar(90, 0.5, Amplitude.kr(SoundIn.ar(0)))!2 }.scope	// square wave
+
+(
+// use input amplitude to control SinOsc frequency - use headphones to prevent feedback.
+{
+    SinOsc.ar(
+            Amplitude.kr(
+                        SoundIn.ar(0),
+                        0.01,
+                        0.01,
+                        1200,
+                        400
+            ),
+            0, 0.3)
+}.play;
+)
+
+
+// Pitch
+
+(
+// we can track the pitch with a pitch follower, two values are returned: freq and hasFreq
+x = {
+	var in, amp, freq, hasFreq, out;
+	in = SoundIn.ar(0).poll(label:\audioIn);
+	amp = Amplitude.ar(in).poll(label:\amp);
+	#freq, hasFreq = Pitch.kr(in).poll(label:\pitch);
+	freq.poll(label:\freq);
+	hasFreq.poll(label:\freq);
+}.play
+
+)
+
+
+(
+// RingModulated by a sinusoidal tone with half frequency by Andrea Valle
+SynthDef.new(\RmOctaver, { var in, out = 0, freq, hasFreq;
+    in = SoundIn.ar(0);
+    # freq, hasFreq = Pitch.kr(in);
+    Out.ar(out, SinOsc.ar(freq: freq*0.5)*in+in);
+}).add;
+)
+
+Synth.new(\RmOctaver);
+
+
+
 ~buf = Buffer.read(s, "/Users/alo/snd/Kimpala.aiff")
 
 SynthDef('pitch', {|buf|
