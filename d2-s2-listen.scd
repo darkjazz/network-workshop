@@ -80,6 +80,127 @@ Synth.new(\RmOctaver);
 
 
 
+
+
+
+/*
+TRIGGERING
+
+Triggers can be used to start various processes. In a SynthDef, a trigger can be any signal that changes from non-positive to positive
+*/
+
+
+/* a trigger at regular intervals, that activates the amplitude envelope and a random number generator at the same time
+*/
+SynthDef('impulse', {arg rate, amp;
+	var trig, sig, freq;
+	trig = Impulse.kr(rate);
+	freq = TRand.kr(200, 400, trig);
+	sig = SinOsc.ar(freq) * EnvGen.kr(Env.perc, trig, levelScale: amp, timeScale: 1.0/rate);
+	Out.ar(0, sig)
+}).add.send(~server);
+
+~synth = Synth('impulse', ['rate', 2, 'amp', 0.4])
+
+~synth.set('rate', 3)
+
+~synth.free
+
+// a trigger at irregular intervals
+SynthDef('dust', {arg rate, amp;
+	var trig, sig, freq;
+	trig = Dust.kr(rate);
+	freq = TRand.kr(200, 400, trig);
+	sig = SinOsc.ar(freq) * EnvGen.kr(Env.perc, trig, levelScale: amp, timeScale: 1.0/rate);
+	Out.ar(0, sig)
+}).add.send(~server)
+
+~synth = Synth('dust', ['rate', 2, 'amp', 0.4])
+
+~synth.set('rate', 3)
+
+~synth.free
+
+// or you can trigger whenever you want
+
+SynthDef('trig', {arg bus, amp;
+	var trig, sig, freq, dur;
+	trig = InTrig.kr(bus);
+	freq = TRand.kr(200, 400, trig);
+	dur = TRand.kr(0.5, 2.0, trig);
+	sig = SinOsc.ar(freq) * EnvGen.kr(Env.perc, trig, levelScale: amp, timeScale: dur);
+	Out.ar(0, sig)
+}).add.send(~server)
+
+~bus = Bus.control(s)
+
+~synth = Synth('trig', ['bus', ~bus, 'amp', 0.4])
+
+~bus.set(1.0)
+
+~synth.free
+
+s.freeAll
+
+
+
+
+
+
+
+// trigger a buffer
+
+SynthDef('buftrig', {arg buffer, bus, amp;
+	var trig, sig;
+	trig = InTrig.kr(bus);
+	sig = PlayBuf.ar(1, buffer, trigger: trig) * amp;
+	Out.ar(0, sig)
+}).add.send(~server);
+
+
+
+~synth = Synth('buftrig', ['buffer', ~sample, 'bus', ~bus, 'amp', 0.4])
+
+~synth.set('amp', 1.0)
+
+~bus.set(1.0);
+
+~synth.free
+
+
+
+/* you can use the trigger in a Pbind pattern
+in this example to trigger a sample every time there is a rest
+using Pfunc which evaluates a function on every time step of the pattern
+the function checks if the duration value is Rest and only in that case sets the trigger
+*/
+
+~seq = Pbind(
+	// 'server', Prand([s, ~server], inf),
+	'instrument', 'sine',
+	'freq', Pseq(Scale.minor.ratios * 201, inf),
+	'amp', Pwhite(0.4, 0.8),
+	'dur', Prand([1, 2, 3, 4, Rest(1)], inf),
+	'checkdur', Pfunc({arg event; if (event.dur.class == Rest) { ~bus.set(1.0) }; 0 }),
+	'delta', 0.5
+).play
+
+
+~seq.stop
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ~buf = Buffer.read(s, "/Users/alo/snd/Kimpala.aiff")
 
 SynthDef('pitch', {|buf|

@@ -38,7 +38,8 @@ to stop all local server processes cmd-.
 
 
 
-
+connect to eototo
+password: iame0t0t0
 
 
 
@@ -74,7 +75,7 @@ SynthDef('crackle', {arg param;
 
 ~localcrackle.set('param', 0.8)
 
-~remotecrackle.free
+~localcrackle.free
 
 
 SynthDef('tone', {arg freq, amp, dur;
@@ -89,7 +90,7 @@ Synth('tone', ['freq', 101, 'amp', 0.2, 'dur', 1.0], ~server)
 
 Tdef('tones', {
 	loop({
-		Synth('tone', ['freq', 201.rand, 'amp', 0.5, 'dur', rrand(0.4, 1.0)], ~server);
+		Synth('tone', ['freq', 201.rand, 'amp', 0.05, 'dur', rrand(0.4, 1.0)], ~server);
 		[0.25, 0.5, 0.375].choose.wait
 	})
 }).play
@@ -107,7 +108,11 @@ DAY 1 SESSION 1: SUPERCOLLIDER BASICS
 */
 
 
-
+this a list []
+{} function
+'symbol' \symbol
+"text"
+Object.message(parameter1, parameter2,..)
 
 /* NETWORK
 
@@ -122,7 +127,7 @@ for example, you can send chat messages
 
 ~client = NetAddr("192.168.2.3", 57120)
 
-~client.sendMsg("/chat", "alo", "hello let's make some noise :)")
+~client.sendMsg("/chat", "alo", "the Tdef is called loop")
 
 OSCdef('chat', {arg message;
 	Post << "#" << message[1] << ": " << message[2] << Char.nl
@@ -175,15 +180,17 @@ if you wrap it in a string and send it and hope that they trust you to
 receive it
 */
 
-~mycode = "Tdef('loop', {
+Tdef('loop', {
 	100.do({
 		SynthDef('racket', {
 			Out.ar(0, PMOsc.ar(rrand(30, 60), rrand(100, 200), 10.rand)
-				* Line.kr(0.3.rand, 0, rrand(0.3, 1.0), doneAction: Done.freeSelf))
+				* Line.kr(0.06.rand, 0, rrand(0.3, 1.0), doneAction: Done.freeSelf))
 		}).play;
 		rrand(0.2, 0.6).wait;
 	})
-}).play";
+}).play
+
+~mycode = "";
 
 ~client.sendMsg("/run", ~mycode)
 
@@ -192,6 +199,116 @@ receive it
 OSCdef('run', { arg message;
 	message[1].asString.compile.()
 }, '/run')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// SEQUENCING WITH SCHEDULERS AND LOOPS
+
+~freqs = Scale.minor.ratios * 301;
+Tdef('myloop', {
+	loop({
+		Synth('sine', ['freq', ~freqs.choose, 'amp', 0.2.rand, 'dur', 1 ], ~server);
+		1.wait; // <---- VERY IMPORTANT!!!!
+	})
+}).play
+
+// you can change it while it runs
+
+Tdef('myloop', {
+	loop({
+		Synth('sine', ['freq', ~freqs.choose, 'amp', 0.2, 'dur', 0.4 ], [~server, s].choose);
+		0.1.wait;
+	})
+});
+
+// now clear it up so it doesn't run indefinitely
+Tdef('myloop').clear
+
+
+
+
+
+
+
+
+
+
+
+
+
+// SEQUENCING WITH PATTERNS
+
+// there is this magical object called Pbind...
+~bind = Pbind().play
+~bind.stop
+
+SynthDef('sine', {arg freq, amp, dur;
+	var sig;
+	sig = SinOsc.ar(freq) * EnvGen.kr(Env.perc, 1, amp, timeScale: dur, doneAction: Done.freeSelf);
+	Out.ar(0, sig)
+}).add.send(~server)
+
+~seq = Pbind(
+	// 'server', Prand([s, ~server], inf),
+	'instrument', 'sine',
+	'freq', Pseq(Scale.minor.ratios * 201, inf),
+	'amp', Pwhite(0.4, 0.8),
+	'dur', Prand([1, 2, 3, 4], inf),
+	'delta', 0.5
+).play
+
+~seq.stop
+
+
+
+
+
+
+
+
+
+
+
+
+SynthDef('slide', {arg freq, amp, dur;
+	var sig;
+	sig = SinOsc.ar(XLine.kr(freq, freq*2, dur)) * EnvGen.kr(Env.perc, 1, amp, timeScale: dur, doneAction: Done.freeSelf);
+	Out.ar(0, sig)
+}).add.send(~server)
+
+
+~seq = Pseq([
+	Pbind(
+		// 'server', Prand([s, ~server], inf),
+		'instrument', 'sine',
+		'freq', Pseq(Scale.minor.ratios * 201, 2),
+		'amp', Pwhite(0.4, 0.8),
+		'dur', Prand([1, 2, 3, 4], inf),
+		'delta', 0.5
+	),
+	Pbind(
+		// 'server', Pstutter(2, Pseq([s, ~server], 2)),
+		'instrument', Pseq(['sine', 'slide'], 8),
+		'freq', Pseq(Scale.minor.ratios.reverse * 401, 2),
+		'amp', 0.5,
+		'dur', 0.7,
+		'delta', 0.25
+	)
+], inf).play
+
+
+~seq.stop
 
 
 
@@ -278,7 +395,7 @@ Synth('filter', ['freq', 241, 'amp', 2.0, 'dur', 2.0 ], ~server)
 
 // you can record a sound
 
-~sample = Buffer.alloc(s, 44100 * 2)
+~sample = Buffer.alloc(s, 44100)
 
 ~remotesample = Buffer.alloc(~server, 44100)
 
@@ -289,7 +406,7 @@ SynthDef('record', {arg buffer;
 	rec = RecordBuf.ar(input, buffer, loop: 0, doneAction: Done.freeSelf);
 }).add.send(~server);
 
-Synth('record', ['buffer', ~remotesample], ~server)
+Synth('record', ['buffer', ~sample])
 
 
 SynthDef('loop-sample', {arg buffer, amp, rate;
@@ -299,105 +416,30 @@ SynthDef('loop-sample', {arg buffer, amp, rate;
 }).add.send(~server)
 
 
-~looper = Synth('loop-sample', ['buffer', ~sample, 'amp', 0.4, 'rate', 1], ~server)
+~looper = Synth('loop-sample', ['buffer', ~sample, 'amp', 0.4, 'rate', 1])
 
-~looper.set('rate', 0.5)
+~looper.set('rate', -1.0)
 
 ~looper.free
 
-
-// then you can send it to someone else's computer and play it
-
-~sample.loadToFloatArray(action: {arg array;
-	~samplearray = array
-});
-
-
-
+//
+// // then you can send it to someone else's computer and play it
+//
+// ~sample.loadToFloatArray(action: {arg array;
+// 	~samplearray = array
+// });
+//
 
 
+~sample.write
+
+"mkdir ~/Desktop/rewire-sounds".unixCmd
+
+
+"mkdir ~/Desktop/MIRLC".unixCmd
 
 
 
-
-
-
-
-// SEQUENCING WITH SCHEDULERS AND LOOPS
-
-~freqs = Scale.minor.ratios * 301;
-Tdef('myloop', {
-	loop({
-		Synth('sine', ['freq', ~freqs.choose, 'amp', 0.2.rand, 'dur', 1 ], ~server);
-		1.wait; // <---- VERY IMPORTANT!!!!
-	})
-}).play
-
-// you can change it while it runs
-
-Tdef('myloop', {
-	loop({
-		Synth('sine', ['freq', ~freqs.choose, 'amp', 0.2, 'dur', 0.4 ]);
-		0.1.wait;
-	})
-})
-
-// now clear it up so it doesn't run indefinitely
-Tdef('myloop').clear
-
-
-// SEQUENCING WITH PATTERNS
-
-// there is this magical object called Pbind...
-~bind = Pbind().play
-~bind.stop
-
-SynthDef('sine', {arg freq, amp, dur;
-	var sig;
-	sig = SinOsc.ar(freq) * EnvGen.kr(Env.perc, 1, amp, timeScale: dur, doneAction: Done.freeSelf);
-	Out.ar(0, sig)
-}).add.send(~server)
-
-~seq = Pbind(
-	'server', Prand([s, ~server], inf),
-	'instrument', 'sine',
-	'freq', Pseq(Scale.minor.ratios * 201, inf),
-	'amp', Pwhite(0.4, 0.8),
-	'dur', Prand([1, 2, 3, 4], inf),
-	'delta', 0.5
-).play
-
-~seq.stop
-
-
-SynthDef('slide', {arg freq, amp, dur;
-	var sig;
-	sig = SinOsc.ar(XLine.kr(freq, freq*2, dur)) * EnvGen.kr(Env.perc, 1, amp, timeScale: dur, doneAction: Done.freeSelf);
-	Out.ar(0, sig)
-}).add.send(~server)
-
-
-~seq = Pseq([
-	Pbind(
-		'server', Prand([s, ~server], inf),
-		'instrument', 'sine',
-		'freq', Pseq(Scale.minor.ratios * 201, 2),
-		'amp', Pwhite(0.4, 0.8),
-		'dur', Prand([1, 2, 3, 4], inf),
-		'delta', 0.5
-	),
-	Pbind(
-		'server', Pstutter(2, Pseq([s, ~server], 2)),
-		'instrument', Pseq(['sine', 'slide'], 8),
-		'freq', Pseq(Scale.minor.ratios.reverse * 401, 2),
-		'amp', 0.5,
-		'dur', 0.7,
-		'delta', 0.25
-	)
-], inf).play
-
-
-~seq.stop
 
 
 
