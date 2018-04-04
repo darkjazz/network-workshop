@@ -67,6 +67,19 @@ x = {
 )
 
 
+(
+// RingModulated by a sinusoidal tone with half frequency by Andrea Valle
+SynthDef.new(\RmOctaver, { var in, out = 0, freq, hasFreq;
+    in = SoundIn.ar(0);
+    # freq, hasFreq = Pitch.kr(in);
+    Out.ar(out, SinOsc.ar(freq: freq*0.5)*in+in);
+}).add;
+)
+
+Synth.new(\RmOctaver);
+
+
+
 ~buf = Buffer.read(s, "/Users/alo/snd/Kimpala.aiff")
 
 SynthDef('pitch', {|buf|
