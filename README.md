@@ -40,7 +40,7 @@ This 2-day hands-on workshop has been designed to understand the main concepts i
 
 ## Application start
 
-A link to a zipped folder with the material is provided at the beginning of the workshop. The sessions are divided into big blocks that can be found as ``.scd`` files. Each ``.scd`` is self-explanatory with instructions included. 
+A [link to a zipped folder with the material](https://github.com/darkjazz/network-workshop.git) is provided at the beginning of the workshop. The sessions are divided into big blocks that can be found as ``.scd`` files. Each ``.scd`` is self-explanatory with instructions included. 
 
 ## Dependencies
 
