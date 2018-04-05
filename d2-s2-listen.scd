@@ -144,6 +144,11 @@ the function checks if the duration value is Rest and only in that case sets the
 
 
 
+
+
+
+
+
 // MACHINE LISTENING
 
 // we can use machine listening ugens to capture information
@@ -155,11 +160,18 @@ the function checks if the duration value is Rest and only in that case sets the
 // directly reading from the input of computer/soundcard...
 
 // avoid feedback using headphones
-{ SoundIn.ar(0) }.play; // mono
-{ SoundIn.ar([0,1]) }.play; // stereo
-{ SoundIn.ar(0)!2 }.play; // stereo
+x = { SoundIn.ar(0) }.play; // mono
+x.free
 
-{SoundIn.ar(0).poll(label:\audioIn)}.play;
+x = { SoundIn.ar([0,1]) }.play; // stereo
+x.free
+
+x = { SoundIn.ar(0)!2 }.play; // stereo or 2 mono?
+x.free
+
+x = {SoundIn.ar(0).poll(label:\audioIn)}.play;
+x.free
+
 
 (
 x = {
@@ -168,17 +180,21 @@ in = SoundIn.ar(0).poll(label:\audioIn);
 Amplitude.kr(in).poll(label:\amp); // input amplitude
 }.play;
 )
+x.free
 
 // plot the amplitude
-{ Amplitude.kr(SoundIn.ar(0)); }.scope;
+x = { Amplitude.kr(SoundIn.ar(0)); }.scope;
+x.free
 
 //	plugging the SoundIn as the amplitude of a UG e.g. pulse width modulation  - use headphones to prevent feedback.
-{ Pulse.ar(440, 0.1, Amplitude.kr(SoundIn.ar(0)))!2 }.scope
-{ Pulse.ar(90, 0.5, Amplitude.kr(SoundIn.ar(0)))!2 }.scope	// square wave
+x = { Pulse.ar(440, 0.1, Amplitude.kr(SoundIn.ar(0)))!2 }.scope
+x.free
+x = { Pulse.ar(90, 0.5, Amplitude.kr(SoundIn.ar(0)))!2 }.scope	// square wave
+x.free
 
 (
 // use input amplitude to control SinOsc frequency - use headphones to prevent feedback.
-{
+x = {
     SinOsc.ar(
             Amplitude.kr(
                         SoundIn.ar(0),
@@ -190,8 +206,7 @@ Amplitude.kr(in).poll(label:\amp); // input amplitude
             0, 0.3)
 }.play;
 )
-
-
+x.free
 // Pitch
 
 (
@@ -206,6 +221,8 @@ x = {
 }.play
 
 )
+x.free
+
 
 
 (
@@ -213,11 +230,12 @@ x = {
 SynthDef.new(\RmOctaver, { var in, out = 0, freq, hasFreq;
     in = SoundIn.ar(0);
     # freq, hasFreq = Pitch.kr(in);
-    Out.ar(out, SinOsc.ar(freq: freq*0.5)*in+in);
-}).add;
+    Out.ar(out, SinOsc.ar(freq: freq*0.5)*in);
+}).add.send(~server);
 )
 
-Synth.new(\RmOctaver);
+~synth = Synth(\RmOctaver);
+~synth.free
 
 
 
@@ -230,18 +248,16 @@ Synth.new(\RmOctaver);
 
 
 
-
-
+// pitch following a sound file and controlling phase modulation
 
 ~buf = Buffer.read(s, "~/snd/Kimpala.aiff".absolutePath)
 
 SynthDef('pitch', {arg buf;
 	var input, pitch, freq, hasFreq;
-	// input = SoundIn.ar([0]);
 	input = PlayBuf.ar(2, buf, BufRateScale.kr(buf), loop: 1);
 	#freq, hasFreq = Pitch.kr(input.sum);
-	Out.ar(0, VarSaw.ar(freq, 0, 0.2, 0.3).dup)
-}).add.send(~server);
+	Out.ar(0, PMOsc.ar(freq, freq, freq, 0.3).dup)
+}).add;
 
 ~synth = Synth('pitch', ['buf', ~buf])
 
@@ -276,11 +292,11 @@ SynthDef('onsets', {arg gate, freq, buf, iamp;
 	Out.ar(0, Pan2.ar(SinOsc.ar(TRand.kr(freq/2, freq*2, trig), 0, 0.3),
 		TRand.kr(-1.0, 1.0, trig))
 		* EnvGen.kr(Env.perc, trig, timeScale: 0.3) + (input * iamp))
-}).add.send(~server);
+}).add;
 
 ~synth = Synth('onsets', ['gate', 0.8, 'freq', 311, 'buf', ~buf])
 
-~synth.set('iamp', 0.0, 'gate', 3.0)
+~synth.set('iamp', 0.0, 'gate', 0.5)
 
 ~synth.free
 

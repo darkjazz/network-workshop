@@ -225,10 +225,10 @@ f.value("abuse")
 
 
 /*
-everything in SuperCollider is an Object and every object has variables and methods - functions that change these variables
+everything in SuperCollider is an Object and every object has variables and methods - functions that change these variables.
 */
 
-Object.message(parameter1, parameter2,..)
+Object.method(parameter1, parameter2,..)
 
 Scale.at(\ionian)
 
@@ -240,14 +240,20 @@ SystemClock.sched(2.0, {arg time;
 SystemClock.clear
 
 /*
-Most objects you have to be created first by using the special method 'new'
+Most objects you have to be created first by using the special method 'new', which can be omitted
+
 */
 
 ~env = Env.new([0.01, 0.3, 1.0, 0.4], [0.2, 0.5, 0.3], 'exp')
+// is the same as
+~env = Env([0.01, 0.3, 1.0, 0.4], [0.2, 0.5, 0.3], 'exp')
+
 ~env.plot(500) // plot method, first argument: size in pixels
 
 
 ~tuning = Tuning.new('partch', pi, "partch pi tuning")
+// is the same as
+~tuning = Tuning('partch', pi, "partch pi tuning")
 
 ~tuning.name // name variable
 ~tuning.octaveRatio // octaveRatio variable
