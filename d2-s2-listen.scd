@@ -3,6 +3,147 @@
 // Organized by Music Hackspace.
 // Sponsored by Rewire 2018. The Hague, The Netherlands.
 
+
+/*
+TRIGGERING
+
+Triggers can be used to start various processes. In a SynthDef, a trigger can be any signal that changes from non-positive to positive
+*/
+
+
+/* a trigger at regular intervals, that activates the amplitude envelope and a random number generator at the same time
+*/
+SynthDef('impulse', {arg rate, amp;
+	var trig, sig, freq;
+	trig = Impulse.kr(rate);
+	freq = TRand.kr(200, 400, trig);
+	sig = SinOsc.ar(freq) * EnvGen.kr(Env.perc, trig, levelScale: amp, timeScale: 1.0/rate);
+	Out.ar(0, sig)
+}).add.send(~server);
+
+~synth = Synth('impulse', ['rate', 2, 'amp', 0.4])
+
+~synth.set('rate', 3)
+
+~synth.free
+
+
+
+
+
+
+
+
+
+
+// a trigger at irregular intervals
+SynthDef('dust', {arg rate, amp;
+	var trig, sig, freq;
+	trig = Dust.kr(rate);
+	freq = TRand.kr(200, 400, trig);
+	sig = SinOsc.ar(freq) * EnvGen.kr(Env.perc, trig, levelScale: amp, timeScale: 1.0/rate);
+	Out.ar(0, sig)
+}).add.send(~server)
+
+~synth = Synth('dust', ['rate', 2, 'amp', 0.4])
+
+~synth.set('rate', 3)
+
+~synth.free
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// or you can trigger whenever you want
+
+SynthDef('trig', {arg bus, amp;
+	var trig, sig, freq, dur;
+	trig = InTrig.kr(bus);
+	freq = TRand.kr(200, 400, trig);
+	dur = TRand.kr(0.5, 2.0, trig);
+	sig = SinOsc.ar(freq) * EnvGen.kr(Env.perc, trig, levelScale: amp, timeScale: dur);
+	Out.ar(0, sig)
+}).add.send(~server)
+
+~bus = Bus.control(s)
+
+~synth = Synth('trig', ['bus', ~bus, 'amp', 0.4])
+
+~bus.set(1.0)
+
+~synth.free
+
+s.freeAll
+
+
+
+
+
+
+
+
+
+
+
+
+
+// trigger a buffer
+
+SynthDef('buftrig', {arg buffer, bus, amp;
+	var trig, sig;
+	trig = InTrig.kr(bus);
+	sig = PlayBuf.ar(1, buffer, trigger: trig) * amp;
+	Out.ar(0, sig)
+}).add.send(~server);
+
+
+
+~synth = Synth('buftrig', ['buffer', ~sample, 'bus', ~bus, 'amp', 0.4])
+
+~synth.set('amp', 1.0)
+
+~bus.set(1.0);
+
+~synth.free
+
+
+
+/* you can use the trigger in a Pbind pattern
+in this example to trigger a sample every time there is a rest
+using Pfunc which evaluates a function on every time step of the pattern
+the function checks if the duration value is Rest and only in that case sets the trigger
+*/
+
+~seq = Pbind(
+	// 'server', Prand([s, ~server], inf),
+	'instrument', 'sine',
+	'freq', Pseq(Scale.minor.ratios * 201, inf),
+	'amp', Pwhite(0.4, 0.8),
+	'dur', Prand([1, 2, 3, 4, Rest(1)], inf),
+	'checkdur', Pfunc({arg event; if (event.dur.class == Rest) { ~bus.set(1.0) }; 0 }),
+	'delta', 0.5
+).play
+
+
+~seq.stop
+
+
+
+
+
 // MACHINE LISTENING
 
 // we can use machine listening ugens to capture information
@@ -83,110 +224,6 @@ Synth.new(\RmOctaver);
 
 
 
-/*
-TRIGGERING
-
-Triggers can be used to start various processes. In a SynthDef, a trigger can be any signal that changes from non-positive to positive
-*/
-
-
-/* a trigger at regular intervals, that activates the amplitude envelope and a random number generator at the same time
-*/
-SynthDef('impulse', {arg rate, amp;
-	var trig, sig, freq;
-	trig = Impulse.kr(rate);
-	freq = TRand.kr(200, 400, trig);
-	sig = SinOsc.ar(freq) * EnvGen.kr(Env.perc, trig, levelScale: amp, timeScale: 1.0/rate);
-	Out.ar(0, sig)
-}).add.send(~server);
-
-~synth = Synth('impulse', ['rate', 2, 'amp', 0.4])
-
-~synth.set('rate', 3)
-
-~synth.free
-
-// a trigger at irregular intervals
-SynthDef('dust', {arg rate, amp;
-	var trig, sig, freq;
-	trig = Dust.kr(rate);
-	freq = TRand.kr(200, 400, trig);
-	sig = SinOsc.ar(freq) * EnvGen.kr(Env.perc, trig, levelScale: amp, timeScale: 1.0/rate);
-	Out.ar(0, sig)
-}).add.send(~server)
-
-~synth = Synth('dust', ['rate', 2, 'amp', 0.4])
-
-~synth.set('rate', 3)
-
-~synth.free
-
-// or you can trigger whenever you want
-
-SynthDef('trig', {arg bus, amp;
-	var trig, sig, freq, dur;
-	trig = InTrig.kr(bus);
-	freq = TRand.kr(200, 400, trig);
-	dur = TRand.kr(0.5, 2.0, trig);
-	sig = SinOsc.ar(freq) * EnvGen.kr(Env.perc, trig, levelScale: amp, timeScale: dur);
-	Out.ar(0, sig)
-}).add.send(~server)
-
-~bus = Bus.control(s)
-
-~synth = Synth('trig', ['bus', ~bus, 'amp', 0.4])
-
-~bus.set(1.0)
-
-~synth.free
-
-s.freeAll
-
-
-
-
-
-
-
-// trigger a buffer
-
-SynthDef('buftrig', {arg buffer, bus, amp;
-	var trig, sig;
-	trig = InTrig.kr(bus);
-	sig = PlayBuf.ar(1, buffer, trigger: trig) * amp;
-	Out.ar(0, sig)
-}).add.send(~server);
-
-
-
-~synth = Synth('buftrig', ['buffer', ~sample, 'bus', ~bus, 'amp', 0.4])
-
-~synth.set('amp', 1.0)
-
-~bus.set(1.0);
-
-~synth.free
-
-
-
-/* you can use the trigger in a Pbind pattern
-in this example to trigger a sample every time there is a rest
-using Pfunc which evaluates a function on every time step of the pattern
-the function checks if the duration value is Rest and only in that case sets the trigger
-*/
-
-~seq = Pbind(
-	// 'server', Prand([s, ~server], inf),
-	'instrument', 'sine',
-	'freq', Pseq(Scale.minor.ratios * 201, inf),
-	'amp', Pwhite(0.4, 0.8),
-	'dur', Prand([1, 2, 3, 4, Rest(1)], inf),
-	'checkdur', Pfunc({arg event; if (event.dur.class == Rest) { ~bus.set(1.0) }; 0 }),
-	'delta', 0.5
-).play
-
-
-~seq.stop
 
 
 
@@ -196,27 +233,41 @@ the function checks if the duration value is Rest and only in that case sets the
 
 
 
+~buf = Buffer.read(s, "~/snd/Kimpala.aiff".absolutePath)
 
-
-
-
-
-~buf = Buffer.read(s, "/Users/alo/snd/Kimpala.aiff")
-
-SynthDef('pitch', {|buf|
+SynthDef('pitch', {arg buf;
 	var input, pitch, freq, hasFreq;
 	// input = SoundIn.ar([0]);
 	input = PlayBuf.ar(2, buf, BufRateScale.kr(buf), loop: 1);
 	#freq, hasFreq = Pitch.kr(input.sum);
 	Out.ar(0, VarSaw.ar(freq, 0, 0.2, 0.3).dup)
-}).add;
+}).add.send(~server);
 
 ~synth = Synth('pitch', ['buf', ~buf])
 
 ~synth.free
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // we can also track onsets in the live audio stream
-SynthDef('onsets', {|gate, freq, buf, iamp|
+SynthDef('onsets', {arg gate, freq, buf, iamp;
 	var input, fft, trig;
 	// input = SoundIn.ar([0]);
 	input = PlayBuf.ar(2, buf, BufRateScale.kr(buf), loop: 1);
@@ -225,7 +276,7 @@ SynthDef('onsets', {|gate, freq, buf, iamp|
 	Out.ar(0, Pan2.ar(SinOsc.ar(TRand.kr(freq/2, freq*2, trig), 0, 0.3),
 		TRand.kr(-1.0, 1.0, trig))
 		* EnvGen.kr(Env.perc, trig, timeScale: 0.3) + (input * iamp))
-}).add;
+}).add.send(~server);
 
 ~synth = Synth('onsets', ['gate', 0.8, 'freq', 311, 'buf', ~buf])
 
@@ -233,8 +284,22 @@ SynthDef('onsets', {|gate, freq, buf, iamp|
 
 ~synth.free
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // and then we can combine the two and send it back to the client
-SynthDef('pitch', {|buf|
+SynthDef('pitch', {arg buf;
 	var input, pitch, freq, hasFreq, fft, trig, pch;
 	// input = SoundIn.ar([0]);
 	input = PlayBuf.ar(2, buf, BufRateScale.kr(buf), loop: 1);
@@ -244,7 +309,7 @@ SynthDef('pitch', {|buf|
 	pch = Latch.kr(freq, trig);
 	SendReply.kr(trig, '/pitch', freq);
 	Out.ar(0, SinOsc.ar(freq, 0, 0.3))
-}).add;
+}).add.send(~server);
 
 ~synth = Synth('pitch', ['buf', ~buf])
 
@@ -256,10 +321,23 @@ OSCdef('listen', {|ms|
 
 OSCdef('listen').clear
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 // this is a more advanced technique using changes in frequency bands to control
 // synthesis parameters of the audio input, including pitch shift and reverb
 (
-SynthDef('timbre', {|buf|
+SynthDef('timbre', {arg buf;
 	var input, fft, trig, mfcc, shift, rev;
 	input = SoundIn.ar([0, 1]);
 	// input = PlayBuf.ar(2, buf, BufRateScale.kr(buf), loop: 1);
@@ -273,13 +351,23 @@ SynthDef('timbre', {|buf|
 		drylevel: 1.0, earlyreflevel: LinLin.kr(mfcc[[3, 4, 5]].mean, -1.0, 1.0, 0.1, 0.7)
 	);
 	Out.ar(0, rev)
-}).add
+}).add.send(~server)
 )
 
 
 ~synth = Synth('timbre', ['buf', ~buf])
 
 ~synth.free
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -292,7 +380,7 @@ SynthDef('bpm', {
 	fft = FFT(LocalBuf(1024), input);
 	beat = BeatTrack.kr(fft);
 	SendReply.kr(beat[0], '/beats', beat[3])
-}).add
+}).add.send(~server)
 )
 
 ~synth = Synth('bpm')
@@ -302,6 +390,18 @@ SynthDef('bpm', {
 OSCdef('listen', {|ms|
 	Post << "Current BPM: " << (ms[3] * 60).round(0.1) << Char.nl
 }, '/beats', s.addr)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -316,7 +416,7 @@ SynthDef('bpm', {|buffer, start|
 	beat = BeatTrack.kr(fft);
 	SendReply.kr(beat[0], '/beats', beat[3]);
 	Out.ar(0, input)
-}).add
+}).add.send(~server)
 )
 
 ~synth = Synth('bpm', ['buffer', ~buf, 'start', ~buf.sampleRate * 40])
@@ -329,7 +429,3 @@ OSCdef('listen', {|ms|
 
 OSCdef('listen').clear
 
-
-~mylist = [1, 2, 3]
-
-~mylist.collect({|num| num + 1 })
