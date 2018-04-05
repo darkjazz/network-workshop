@@ -133,7 +133,9 @@ t = 'what are you looking at, punk?'
 true
 false
 
-
+n = 15;
+if (n.odd) { n.asString ++ " is an odd number" } { n.asString ++ " is an even number" }
+if (n.isPrime) { n.asString ++ " is a prime number" } { n.asString ++ " is not a prime number" }
 
 /* variables are sort of containers that hold values you can change
 variables have to be defined with the reserved word var
@@ -163,6 +165,17 @@ mynumber
 ~mynumber.postln
 
 // all lower case letters are defined variables in SuperCollider
+
+a = 0.1
+a
+a = a.pow(2)
+a
+
+b = "this is not a string"
+b
+
+c = 2pi
+c
 
 
 // this an array, a collection of objects, in [ ]
@@ -205,13 +218,40 @@ f.value("abuse")
 
 ~dice.value(6)
 
+
+
+
+
+
+
 /*
-everything in SuperCollider is an Object and every object has methods - functions that change these Objects
+everything in SuperCollider is an Object and every object has variables and methods - functions that change these variables
 */
 
 Object.message(parameter1, parameter2,..)
 
 Scale.at(\ionian)
+
+SystemClock.sched(2.0, {arg time;
+	Post << "SuperCollider has been running for " << time.floor << " seconds" << Char.nl;
+	1.0
+})
+
+SystemClock.clear
+
+/*
+Most objects you have to be created first by using the special method 'new'
+*/
+
+~env = Env.new([0.01, 0.3, 1.0, 0.4], [0.2, 0.5, 0.3], 'exp')
+~env.plot(500) // plot method, first argument: size in pixels
+
+
+~tuning = Tuning.new('partch', pi, "partch pi tuning")
+
+~tuning.name // name variable
+~tuning.octaveRatio // octaveRatio variable
+~tuning.tuning // tuning variable
 
 
 
