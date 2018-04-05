@@ -107,12 +107,86 @@ DAY 1 SESSION 1: SUPERCOLLIDER BASICS
 ----------------------------------------------------------
 */
 
+// data types: numbers, strings, symbols
 
-this a list []
-{} function
-'symbol' \symbol
+1.class
+1.0.class
+pi
+1+1
+2.neg.sqrt
+1/0
+
+// strings
 "text"
+t = "what are you looking at, punk?"
+
+t.do(_.postln)
+
+// symbols
+'symbol'
+\symbol
+
+t = 'what are you looking at, punk?'
+
+
+// booleans can only be true or false, used for conditions in if statements
+true
+false
+
+
+
+
+
+
+// this an array, a collection of objects, in [ ]
+l = [1, "what are you looking at, punk?", pi, 'symbol', 2.neg.sqrt]
+
+// each object in an array has a simple address called an index, starting with 0
+l[0]
+
+// you can do all sorts of stuff with arrays
+l.reverse
+l.scramble
+l.select({arg item; item.isKindOf(Number) })
+l.do({arg item, index;
+	Post << "The index of " << item << " is " << index << Char.nl
+})
+
+
+
+
+
+/* this is a function, a bunch of code enclosed in { } ready to be executed
+
+functions have arguments :) not the Monty Python kind though
+
+just variables that you can feed to the function, whatever the last line evaluates to is returned from the function
+*/
+f = {arg argument;
+	"this is not an argument, this is " ++ argument
+}
+
+f.value("abuse")
+
+
+
+
+
+
+/*
+
+*/
+
 Object.message(parameter1, parameter2,..)
+
+
+
+
+
+
+
+
+
 
 /* NETWORK
 
