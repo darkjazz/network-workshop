@@ -135,7 +135,34 @@ false
 
 
 
+/* variables are sort of containers that hold values you can change
+variables have to be defined with the reserved word var
+*/
+(
+var whatever;
+whatever = 'what are you looking at, punk?';
+whatever.postln
+)
 
+whatever
+
+(
+var mynumber;
+mynumber = 5.rand + 1;
+mynumber.postln
+)
+
+mynumber
+
+// global variables that persist begin with a ~
+~whatever = 'what are you looking at, punk?';
+~whatever
+
+
+~mynumber = 5.rand + 1;
+~mynumber.postln
+
+// all lower case letters are defined variables in SuperCollider
 
 
 // this an array, a collection of objects, in [ ]
@@ -156,6 +183,9 @@ l.do({arg item, index;
 
 
 
+
+
+
 /* this is a function, a bunch of code enclosed in { } ready to be executed
 
 functions have arguments :) not the Monty Python kind though
@@ -169,16 +199,19 @@ f = {arg argument;
 f.value("abuse")
 
 
+~dice = {arg sides;
+	(sides - 1).rand + 1
+}
 
-
-
+~dice.value(6)
 
 /*
-
+everything in SuperCollider is an Object and every object has methods - functions that change these Objects
 */
 
 Object.message(parameter1, parameter2,..)
 
+Scale.at(\ionian)
 
 
 
