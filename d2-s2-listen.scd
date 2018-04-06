@@ -133,15 +133,18 @@ the function checks if the duration value is Rest and only in that case sets the
 	'freq', Pseq(Scale.minor.ratios * 201, inf),
 	'amp', Pwhite(0.4, 0.8),
 	'dur', Prand([1, 2, 3, 4, Rest(1)], inf),
-	'checkdur', Pfunc({arg event; if (event.dur.class == Rest) { ~bus.set(1.0) }; 0 }),
+	'checkdur', Pfunc({arg event;
+		if (event.dur.isKindOf(Rest))
+		{
+			~bus.set(1.0)
+		};
+		0 // you have to return a value
+	}),
 	'delta', 0.5
 ).play
 
 
 ~seq.stop
-
-
-
 
 
 

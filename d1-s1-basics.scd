@@ -82,15 +82,15 @@ SynthDef('tone', {arg freq, amp, dur;
 	var sig, env;
 	env = Line.kr(1, 0, dur);
 	FreeSelfWhenDone.kr(env);
-	sig = LFSaw.ar(freq) * env;
-	Out.ar(0, sig)
-}).send(~server)
+	sig = SinOsc.ar(freq) * env;
+	Out.ar(0, Pan2.ar(sig, SinOsc.kr(8)))
+}).add.send(~server)
 
-Synth('tone', ['freq', 101, 'amp', 0.2, 'dur', 1.0], ~server)
+Synth('tone', ['freq', 201, 'amp', 0.2, 'dur', 1.0], ~server)
 
 Tdef('tones', {
 	loop({
-		Synth('tone', ['freq', 201.rand, 'amp', 0.05, 'dur', rrand(0.4, 1.0)], ~server);
+		Synth('tone', ['freq', 501.rand, 'amp', 0.05, 'dur', rrand(0.4, 1.0)], ~server);
 		[0.25, 0.5, 0.375].choose.wait
 	})
 }).play
@@ -278,9 +278,9 @@ for example, you can send chat messages
 "ipconfig getifaddr en0".unixCmd // <-- execute this to see your address in the post window
 
 
-~client = NetAddr("192.168.2.3", 57120)
+~client = NetAddr("127.0.0.1", 57120)
 
-~client.sendMsg("/chat", "alo", "the Tdef is called loop")
+~client.sendMsg("/chat", "alo", "hello! my ip is 192.168.2.3")
 
 OSCdef('chat', {arg message;
 	Post << "#" << message[1] << ": " << message[2] << Char.nl
@@ -409,7 +409,7 @@ Tdef('myloop').clear
 SynthDef('sine', {arg freq, amp, dur;
 	var sig;
 	sig = SinOsc.ar(freq) * EnvGen.kr(Env.perc, 1, amp, timeScale: dur, doneAction: Done.freeSelf);
-	Out.ar(0, sig)
+	Out.ar(0, sig.dup)
 }).add.send(~server)
 
 ~seq = Pbind(
@@ -434,13 +434,16 @@ SynthDef('sine', {arg freq, amp, dur;
 
 
 
+
+
 SynthDef('slide', {arg freq, amp, dur;
 	var sig;
 	sig = SinOsc.ar(XLine.kr(freq, freq*2, dur)) * EnvGen.kr(Env.perc, 1, amp, timeScale: dur, doneAction: Done.freeSelf);
-	Out.ar(0, sig)
+	Out.ar(0, sig.dup)
 }).add.send(~server)
 
 
+// you can also sequence Pbinds
 ~seq = Pseq([
 	Pbind(
 		// 'server', Prand([s, ~server], inf),
@@ -462,3 +465,40 @@ SynthDef('slide', {arg freq, amp, dur;
 
 
 ~seq.stop
+
+
+
+
+
+
+
+
+
+
+
+// you can play Pbinds in parallel
+~seq = Ppar([
+	Pbind(
+		// 'server', Prand([s, ~server], inf),
+		'instrument', 'sine',
+		'freq', Pseq(Scale.minor.ratios * 201, 2),
+		'amp', Pwhite(0.4, 0.8),
+		'dur', Prand([1, 2, 3, 4], inf),
+		'delta', 0.5
+	),
+	Pbind(
+		// 'server', Pstutter(2, Pseq([s, ~server], 2)),
+		'instrument', Pseq(['sine', 'slide'], 8),
+		'freq', Pseq(Scale.minor.ratios.reverse * 401, 2),
+		'amp', 0.5,
+		'dur', 0.7,
+		'delta', 0.25
+	)
+], inf).play
+
+~seq.stop
+
+
+
+
+
