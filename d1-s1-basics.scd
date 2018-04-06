@@ -498,6 +498,7 @@ SynthDef('slide', {arg freq, amp, dur;
 
 ~seq.stop
 
+s.quit
 
 
 
