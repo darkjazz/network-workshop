@@ -3,6 +3,8 @@
 // Organized by Music Hackspace.
 // Sponsored by Rewire 2018. The Hague, The Netherlands.
 
+// You can find a ton of advanced examples in the folders "examples/pieces" and "examples/demonstrations" in SuperCollider. For example see: "spacelab.scd" by jy.
+
 // MORE ADVANCED DRUMMING SEQUENCE
 // DJEMBE RHYTHM PATTERN DJAKANDI
 
