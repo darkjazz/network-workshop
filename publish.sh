@@ -12,3 +12,5 @@ zip -r -X ../network-workshop.zip ./*
 cd ..
 sudo mkdir -p /Library/WebServer/Documents/rewire
 sudo cp network-workshop.zip /Library/WebServer/Documents/rewire/
+sudo cp index.html /Library/WebServer/Documents/rewire/
+sudo cp hackspace.png /Library/WebServer/Documents/rewire/
