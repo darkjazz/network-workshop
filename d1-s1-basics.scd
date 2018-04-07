@@ -10,11 +10,7 @@ Sponsored by Rewire 2018. The Hague, The Netherlands.
 INTRODUCTION
 ----------------------------------------------------------
 
-
-
-
-Download: https://supercollider.github.io
-The files are available at: http://192.168.1.100/rewire/network.zip
+The files are available at: http://tehis.net/rewire/
 
 Make visible Library folder in Mac:
 https://www.maketecheasier.com/view-library-folder-osx/
