@@ -4,3 +4,6 @@
 // Sponsored by Rewire 2018. The Hague, The Netherlands.
 
 // NETWORK WORKSHOP PERFORMANCE DAY 2
+
+// WORKSHOP FEEDBACK
+// Please, give us your feedback: https://goo.gl/u9jxva
