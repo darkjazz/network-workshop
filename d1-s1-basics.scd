@@ -16,6 +16,13 @@ INTRODUCTION
 Download: https://supercollider.github.io
 The files are available at: http://192.168.1.100/rewire/network.zip
 
+Make visible Library folder in Mac:
+https://www.maketecheasier.com/view-library-folder-osx/
+
+Where to copy extended libraries?
+SuperCollider Extensions folder:
+http://doc.sccode.org/Guides/UsingExtensions.html
+
 
 SuperCollider basics:
 
@@ -38,6 +45,8 @@ to stop all local server processes cmd-.
 
 to record the sound you are producing type "Server.default.record" and execute cmd-ENTER. To stop the recording press cmd-ENTER (varies by platform). Alternatively type "Server.default.makeGui" and press the record/stop buttons. The sounds are recorded in "~/Music/SuperCollider Recordings/" (varies by platform).
 
+debugging tips:
+http://danielnouri.org/docs/SuperColliderHelp/Language/Debugging-tips.html
 
 
 connect to eototo
