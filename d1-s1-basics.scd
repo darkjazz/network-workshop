@@ -12,12 +12,6 @@ INTRODUCTION
 
 The files are available at: http://tehis.net/rewire/
 
-Make visible Library folder in Mac:
-https://www.maketecheasier.com/view-library-folder-osx/
-
-Where to copy extended libraries?
-SuperCollider Extensions folder:
-http://doc.sccode.org/Guides/UsingExtensions.html
 
 
 SuperCollider basics:
@@ -39,14 +33,16 @@ to execute code, highlight it and press cmd-ENTER (varies by platform)
 
 to stop all local server processes cmd-.
 
-to record the sound you are producing type "Server.default.record" and execute cmd-ENTER. To stop the recording press cmd-ENTER (varies by platform). Alternatively type "Server.default.makeGui" and press the record/stop buttons. The sounds are recorded in "~/Music/SuperCollider Recordings/" (varies by platform).
+Make visible Library folder in Mac:
+cmd-SHIFT-.
 
-to upload sounds to freesound in this workshop:
-user:
-password:
+Where to copy extended libraries?
+SuperCollider Extensions folder:
+http://doc.sccode.org/Guides/UsingExtensions.html
 
 debugging tips:
 http://danielnouri.org/docs/SuperColliderHelp/Language/Debugging-tips.html
+
 
 
 connect to eototo
