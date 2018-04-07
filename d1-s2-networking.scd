@@ -133,11 +133,10 @@ SynthDef('loop-sample', {arg buffer, amp, rate;
 // UPLOAD SOUNDS TO FREESOUND
 
 
-
-
 // NETWORKING ACTIVITIES
 
 // MIRLCRep library: Repurposing sounds from Freesound.org
+// This library is under development, apologies for the bugs!
 
 
 // make a directory for MIRLC on your Desktop
@@ -254,14 +253,38 @@ SynthDef('loop-sample', {arg buffer, amp, rate;
 ~b.printpool
 ~a.printall
 
-// TODO@Anna: add more complex structures e.g. loops, conditionals...
+// Another example
 
-// Parallel MIRLCRep
+~c = MIRLCRep.new
+~c.content(1, 'dur', 1)
+~c.content(1, 'dur', 2)
+~c.content(1, 'dur', 4)
+~c.content(1, 'dur', 8)
 
-// TODO@Anna: add examples of parallel use of MIRLCRep
+~c.sequence
+~c.parallel
+
+
+(
+
+r = Routine({
+    var delta;
+    loop {
+        delta = rrand(1, 3) * 0.5;
+         if ( [false, true].choose,
+			{ ~c.sequence; },
+			{ ~c.parallel; }
+		 );
+        delta.yield;
+    }
+});
+)
+r.play
+
+
+// Activities to explore with what we have learned!
 
 // Pairs or small groups exchange
-
 
 // Everyone controls central server
 
