@@ -45,6 +45,10 @@ to stop all local server processes cmd-.
 
 to record the sound you are producing type "Server.default.record" and execute cmd-ENTER. To stop the recording press cmd-ENTER (varies by platform). Alternatively type "Server.default.makeGui" and press the record/stop buttons. The sounds are recorded in "~/Music/SuperCollider Recordings/" (varies by platform).
 
+to upload sounds to freesound in this workshop:
+user:
+password:
+
 debugging tips:
 http://danielnouri.org/docs/SuperColliderHelp/Language/Debugging-tips.html
 
