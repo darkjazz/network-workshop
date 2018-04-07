@@ -36,6 +36,8 @@ to execute code, highlight it and press cmd-ENTER (varies by platform)
 
 to stop all local server processes cmd-.
 
+to record the sound you are producing type "Server.default.record" and execute cmd-ENTER. To stop the recording press cmd-ENTER (varies by platform). Alternatively type "Server.default.makeGui" and press the record/stop buttons. The sounds are recorded in "~/Music/SuperCollider Recordings/" (varies by platform).
+
 
 
 connect to eototo
