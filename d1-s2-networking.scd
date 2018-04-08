@@ -138,6 +138,9 @@ SynthDef('loop-sample', {arg buffer, amp, rate;
 // MIRLCRep library: Repurposing sounds from Freesound.org
 // This library is under development, apologies for the bugs!
 
+// You can check the Freesound quark API here: "https://github.com/g-roma/Freesound.sc"
+// You can check the MIRLC extension API here: "https://github.com/axambo/MIRLC"
+
 
 // make a directory for MIRLC on your Desktop
 "mkdir ~/Desktop/MIRLC".unixCmd
@@ -233,11 +236,15 @@ SynthDef('loop-sample', {arg buffer, amp, rate;
 ~a.sequence
 ~a.parallel
 
+
 ~a.solo(4)
 
 ~a.mute(2)
 
 ~a.muteall
+
+~a.pause(0)
+~a.stop(1)
 
 ~a.stop
 
