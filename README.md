@@ -8,7 +8,7 @@ Sponsored by Rewire 2018. The Hague, The Netherlands.
 
 ## Introduction
 
-This 2-day hands-on workshop has been designed to understand the main concepts in collaborative network music and core building blocks in SuperCollider. The concepts should be transferable to other programming languages. The style of the workshop is Q&A, bsed on group work, open and adaptable to the level and pace of the students. 
+This 2-day hands-on workshop has been designed to understand the main concepts in collaborative network music and core building blocks in SuperCollider. The concepts should be transferable to other programming languages. The style of the workshop is Q&A, based on group work, open and adaptable to the level and pace of the students.
 
 ## Table of contents
 
@@ -28,11 +28,12 @@ This 2-day hands-on workshop has been designed to understand the main concepts i
 ### Day 2
 
 - Recap performance previous day (recording & conversation).
+- Projects (Beacon, Cinder, Algorave, students' projects).
 - Revisit of concepts from day 1.
 - Triggering.
 - Machine listening.
 - Break.
-- Quick tour to tools & discussion (Utopia).
+- Audio samples (own and crowd-sourced sounds).
 - Performance planning.
 - Break.
 - Performance.
@@ -40,7 +41,7 @@ This 2-day hands-on workshop has been designed to understand the main concepts i
 
 ## Application start
 
-A [link to a zipped folder with the material](https://github.com/darkjazz/network-workshop.git) is provided at the beginning of the workshop. The sessions are divided into big blocks that can be found as ``.scd`` files. Each ``.scd`` is self-explanatory with instructions included. 
+A [link to a zipped folder with the material](https://github.com/darkjazz/network-workshop.git) is provided at the beginning of the workshop. Instructions and key links of the workshop can be found [here](http://tehis.net/rewire/). The sessions are divided into big blocks that can be found as ``.scd`` files. Each ``.scd`` is self-explanatory with instructions included.
 
 ## Dependencies
 
